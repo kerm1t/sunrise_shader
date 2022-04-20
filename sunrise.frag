@@ -6,14 +6,17 @@ uniform float u_time;
 
 uniform float slowtime = 0.4; // < 1 slow down, > 1 speed up
 uniform float sun_radius = 0.15;
-uniform float sun_east = 1.05; // for full screen (window: 0.6)
+uniform float sun_east = .9; // for full screen (window: 0.6)
 uniform float sun_north = 0.8;
 
 float circle(vec2 center, float radius)
 {
   float AR = u_resolution.x / u_resolution.y;
   vec2 coord = gl_FragCoord.xy/u_resolution.xy;
-  return 1.0-step(sun_radius,distance(vec2(coord.x*AR,coord.y),vec2(0.5*AR+sin(u_time*slowtime)*sun_east,cos(u_time*slowtime)*sun_north)));
+  float wobble = sin((0.5-coord.y)*coord.y*250)/75; // wobble-period 250 / wobble-amplitude 75
+  return 1.0-step(sun_radius,distance(vec2(coord.x*AR+wobble,coord.y),vec2(0.5*AR+sin(u_time*slowtime)*sun_east,cos(u_time*slowtime)*sun_north)));
+// debug -> keep sun fixed at center
+  return 1.0-step(sun_radius,distance(vec2(coord.x+wobble,coord.y), center));
 }
   
 void main(void)
